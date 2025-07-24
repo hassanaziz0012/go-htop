@@ -1,13 +1,11 @@
 package ui
 
 import (
-	"context"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/hassanaziz0012/go-htop/ui/opts"
 	"github.com/hassanaziz0012/go-htop/ui/state"
-	"github.com/rivo/tview"
 )
 
 var GlobalOpts = map[string]string{
@@ -25,7 +23,7 @@ var GlobalOpts = map[string]string{
 
 func ConfigureOpts(state *state.AppState) {
 	setOptionSelectFunc(state)
-	configureOptsShortcuts(state.App, state.Pages, state.Cancel)
+	configureOptsShortcuts(state)
 }
 
 func setOptionSelectFunc(state *state.AppState) {
@@ -52,20 +50,50 @@ func setOptionSelectFunc(state *state.AppState) {
 		case "kill":
 			opts.HandleKillOpt(state)
 		case "quit":
-			opts.HandleQuitOpt(state.App, state.Pages, state.Cancel)
+			opts.HandleQuitOpt(state)
 		}
 	})
 }
 
-func configureOptsShortcuts(app *tview.Application, pages *tview.Pages, cancel context.CancelFunc) {
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Rune() == 'q' || event.Key() == tcell.KeyF10 || event.Key() == tcell.KeyEscape {
-			opts.HandleQuitOpt(app, pages, cancel)
+func configureOptsShortcuts(state *state.AppState) {
+	state.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyF1:
+			opts.HandleHelpOpt(state)
+			return nil
+		case tcell.KeyF2:
+			return nil
+		case tcell.KeyF3:
+			opts.HandleSearchOpt(state)
+			return nil
+		case tcell.KeyF4:
+			opts.HandleFilterOpt(state)
+			return nil
+		case tcell.KeyF5:
+			opts.HandleTreeOpt(state)
+			return nil
+		case tcell.KeyF6:
+			opts.HandleSortByOpt(state)
+			return nil
+		case tcell.KeyF7:
+			opts.DecNice(state)
+			return nil
+		case tcell.KeyF8:
+			opts.IncNice(state)
+			return nil
+		case tcell.KeyF9:
+			opts.HandleKillOpt(state)
+			return nil
+		case tcell.KeyF10, tcell.KeyEscape:
+			opts.HandleQuitOpt(state)
 			return nil
 		}
-		if event.Key() == tcell.KeyF9 {
+
+		if event.Rune() == 'q' {
+			opts.HandleQuitOpt(state)
 			return nil
 		}
+
 		return event
 	})
 }

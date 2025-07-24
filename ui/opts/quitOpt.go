@@ -1,17 +1,15 @@
 package opts
 
 import (
-	"context"
-
-	"github.com/rivo/tview"
+	"github.com/hassanaziz0012/go-htop/ui/state"
 )
 
-func HandleQuitOpt(app *tview.Application, pages *tview.Pages, cancel context.CancelFunc) {
-	name, _ := pages.GetFrontPage()
+func HandleQuitOpt(state *state.AppState) {
+	name, _ := state.Pages.GetFrontPage()
 	if name != "main" {
-		pages.RemovePage(name)
+		state.Pages.RemovePage(name)
 		return
 	}
-	app.Stop()
-	cancel()
+	state.App.Stop()
+	state.Cancel()
 }
